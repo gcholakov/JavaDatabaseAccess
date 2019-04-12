@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:security="http://www.springframework.org/schema/security"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security
+        http://www.springframework.org/schema/security/spring-security.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+  <context:component-scan base-package="com.sbc.ebank.aop, com.sbc.ebank.repository"/>
+
+  <security:global-method-security pre-post-annotations="enabled"/>
+  
+<!-- За да не гърми, когато има ; или % в URL адреса
+  <bean id="httpFirewall" class="org.springframework.security.web.firewall.StrictHttpFirewall">
+    <property name="allowSemicolon" value="true" />
+  </bean>
+  <security:http-firewall ref="httpFirewall"/>-->
+  
+  <security:http pattern="/test/**" security="none" />
+  <security:http pattern="/resources/**" security="none" />
+  <security:http pattern="/confirmUser" security="none" />
+  <security:http pattern="/setNewPassword" security="none" />
+  <security:http pattern="/setNewCredentials" security="none" />
+  <security:http pattern="/forgottenPassword" security="none" />
+  <security:http pattern="/public/**" security="none"/>
+    
+<!--  <security:http auto-config="true" use-expressions="true">-->
+  <security:http use-expressions="true">
+    <security:intercept-url pattern="/test" access="permitAll"/>
+    <security:intercept-url pattern="/home/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/system/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/settings/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/changeCustomer/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/messages/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/users/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/notifications/**" access="isAuthenticated()"/>
+
+    <!-- Flows -->
+    <security:intercept-url pattern="/registerBankUser/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/registerCustUser/**" access="isAuthenticated()"/>
+
+    <!-- CUSTOMER -->
+    <security:intercept-url pattern="/cif/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/accounts/**" access="isAuthenticated()"/>
+<!--    <security:intercept-url pattern="/payments/**" access="isAuthenticated()"/>-->
+    <security:intercept-url pattern="/transfers/**" access="isAuthenticated()"/>
+    <security:intercept-url pattern="/requests/**" access="isAuthenticated()"/>
+
+    <security:intercept-url pattern="/demo" access="isAuthenticated()" />
+<!--    <security:intercept-url pattern="/noms/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN_LOC', 'ROLE_RESP_LOC')" />
+    <security:intercept-url pattern="/val/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_ADMIN_LOC', 'ROLE_RESP_LOC')" />-->
+    
+    <security:custom-filter ref="ajaxTimeoutRedirectFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
+<!--    <security:custom-filter ref="characterEncodingFilter" before="CSRF_FILTER"/> -->
+    <security:custom-filter ref="customFilters" before="CSRF_FILTER"/> 
+    <security:custom-filter ref="logoutFilter" position="LOGOUT_FILTER"/>
+
+    <security:access-denied-handler ref="accessDeniedHandler"/>
+<!--    <security:access-denied-handler error-page="/403"/> -->
+
+    <security:form-login
+      login-processing-url="/authentication"
+      login-page="/login"
+      username-parameter="username"
+      password-parameter="password"
+      default-target-url="/home"
+      always-use-default-target="false" 
+      authentication-success-handler-ref="customAuthSuccessHandler" 
+      authentication-failure-handler-ref="customAuthFailureHandler"/>
+<!--      authentication-failure-url="/home?loginerror"-->
+
+<!--    <security:logout logout-success-url="/home?logout" />-->
+
+    <security:csrf request-matcher-ref="csrfMatcher" token-repository-ref="cookieCsrfTokenRepository"/>
+
+<!--    <security:session-management invalid-session-url="/login?expired">-->
+    <security:session-management>
+      <security:concurrency-control max-sessions="5" expired-url="/login?forceexpired" session-registry-alias="sessionRegistry"/>
+    </security:session-management>
+    
+  </security:http>
+
+  <bean id="logoutSuccessHandler" class="com.sbc.ebank.security.CustomLogoutSuccessHandler">
+    <constructor-arg value="/login?logout"/>
+  </bean>
+  <bean id="logoutHandler" class="com.sbc.ebank.security.CustomLogoutHandler"/>
+  <bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+    <constructor-arg name="logoutSuccessHandler" ref="logoutSuccessHandler"/>
+    <constructor-arg name="handlers">
+      <list>
+        <ref bean="logoutHandler" />
+      </list>
+    </constructor-arg>
+    <property name="filterProcessesUrl" value="/logout"/>
+  </bean>
+
+<!--  <bean id="httpSessionCsrfTokenRepository" class="org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository"/>-->
+  <bean id="cookieCsrfTokenRepository" class="org.springframework.security.web.csrf.CookieCsrfTokenRepository"/>
+  
+  <bean id="accessDeniedHandler" class="com.sbc.ebank.security.CustomAccessDeniedHandler">
+    <property name="accessDeniedUrl" value="/403" />
+  </bean>
+  
+  <bean id="customFilters" class="org.springframework.web.filter.CompositeFilter">
+    <property name="filters">
+      <list>
+        <ref bean="sessionCheckFilter"/>
+        <ref bean="characterEncodingFilter"/>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="csrfMatcher" class="com.sbc.ebank.security.CsrfSecurityRequestMatcher"/>
+  <bean id="sessionCheckFilter" class="com.sbc.ebank.security.SessionCheckFilter"/>
+  <bean id="ajaxTimeoutRedirectFilter" class="com.sbc.ebank.security.AjaxTimeoutRedirectFilter"/>
+  <bean id="customAuthSuccessHandler" class="com.sbc.ebank.security.CustomAuthSuccessHandler"/>
+  <bean id="customAuthFailureHandler" class="com.sbc.ebank.security.CustomAuthFailureHandler">
+    <property name="defaultFailureUrl" value="/login"/>
+  </bean>
+  <bean id="characterEncodingFilter" class="org.springframework.web.filter.CharacterEncodingFilter">
+    <constructor-arg name="encoding" value="UTF-8"/>
+    <constructor-arg name="forceEncoding" value="true"/>
+  </bean>
+  <bean id="actionsLogSvc" class="com.sbc.ebank.services.ActionsLogServiceImpl"/>
+
+<!--  <security:authentication-manager>
+    <security:authentication-provider>
+      <security:jdbc-user-service data-source-ref="ebankDataSource" 
+                                  users-by-username-query="select username, password, active from users where username = ?"
+                                  authorities-by-username-query="select u.username, r.rolename from users u, user_roles r where u.user_id = r.user_id and username = ?"
+                                  role-prefix="ROLE_"/>
+      <security:password-encoder hash="bcrypt">
+        <security:salt-source ref="saltSource"/>
+      </security:password-encoder>
+    </security:authentication-provider>
+  </security:authentication-manager>-->
+
+  <bean id="userDetailsService" class="com.sbc.ebank.security.UserDetailServiceImpl"/>
+
+  <security:authentication-manager>
+    <security:authentication-provider user-service-ref="userDetailsService">
+      <security:password-encoder hash="bcrypt"/>
+    </security:authentication-provider>
+  </security:authentication-manager>
+
+    
+<!--<security:authentication-manager>
+    <security:authentication-provider user-service-ref="userDetailsService"/>
+  </security:authentication-manager>
+
+  <security:user-service id="userDetailsService">
+    <security:user name="sbc" password="sbc48" authorities="ROLE_USER"/>
+    <security:user name="gcholakov" password="dionis" authorities="ROLE_ADMIN, ROLE_USER"/>
+  </security:user-service>-->
+  
+</beans>

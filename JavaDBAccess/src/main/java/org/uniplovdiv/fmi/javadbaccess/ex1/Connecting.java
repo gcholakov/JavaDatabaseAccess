@@ -18,7 +18,7 @@ public class Connecting
     try
     {
       //Class.forName("oracle.jdbc.driver.OracleDriver"); not required since JDBC 4.0
-      OracleConnection conn = (OracleConnection) DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "hr", "hr");
+      OracleConnection conn = (OracleConnection) DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "user1", "pass1");
       System.out.println("JDBC 4 connection done: " + conn.getMetaData().getDatabaseProductName());
       return conn;
     }

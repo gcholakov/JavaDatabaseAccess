@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/JavaDBWeb">
+  <Resource abandonConnectionTimeout="20" auth="Container" connectionFactoryClassName="oracle.jdbc.pool.OracleDataSource" connectionPoolName="connPoolTECUTest" connectionWaitTimeout="60" factory="oracle.ucp.jdbc.PoolDataSourceImpl" inactiveConnectionTimeout="30" initialPoolSize="0" maxConnectionReuseCount="50" maxConnectionReuseTime="120" maxPoolSize="40" minPoolSize="0" name="jdbc/ebanktecutest" password="ebank" timeToLiveConnectionTimeout="40" timeoutCheckInterval="15" type="oracle.ucp.jdbc.PoolDataSource" url="jdbc:oracle:thin:@192.168.200.164:1521/testdb1.tecutt.com" user="ebank"/>
+</Context>
