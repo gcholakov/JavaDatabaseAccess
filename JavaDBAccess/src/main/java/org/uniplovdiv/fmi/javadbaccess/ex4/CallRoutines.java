@@ -8,9 +8,28 @@ public class CallRoutines
 {
   public static void main(String[] args)
   {
-    //callFunction();
+    callFunction();
     //callProcedure();
     //callFunctionCursor();
+  }
+
+   public static void callFunction()
+  {
+    try (Connection conn = Connecting.connectJdbc4Oracle();
+            CallableStatement cstmt = conn.prepareCall("{? = call get_employee(?)}"))
+    {
+      cstmt.registerOutParameter(1, Types.VARCHAR);
+      cstmt.setInt(2, 200);
+      cstmt.execute();
+
+      String employeeName = cstmt.getString(1);
+
+      System.out.println("Employee: " + employeeName);
+    }
+    catch (SQLException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   public static void callProcedure()
@@ -32,26 +51,7 @@ public class CallRoutines
     }
   }
 
-  public static void callFunction()
-  {
-    try (Connection conn = Connecting.connectJdbc4Oracle();
-            CallableStatement cstmt = conn.prepareCall("{? = call get_employee(?)}"))
-    {
-      cstmt.registerOutParameter(1, Types.VARCHAR);
-      cstmt.setInt(2, 200);
-      cstmt.execute();
-
-      String employeeName = cstmt.getString(1);
-
-      System.out.println("Employee: " + employeeName);
-    }
-    catch (SQLException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  public static void callFunctionCursor()
+   public static void callFunctionCursor()
   {
     try (Connection conn = Connecting.connectJdbc4Oracle();
             CallableStatement cstmt = conn.prepareCall("{? = call get_departments()}"))

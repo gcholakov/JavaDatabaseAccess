@@ -100,8 +100,6 @@ public class PoolDSController
       try (Statement st = conn.createStatement();
               ResultSet rs = st.executeQuery("select * from employees"))
       {
-        result.append(conn.toString() + "<br/><br/>");
-
         while (rs.next())
         {
           result.append(rs.getString("first_name") + "<br/>");

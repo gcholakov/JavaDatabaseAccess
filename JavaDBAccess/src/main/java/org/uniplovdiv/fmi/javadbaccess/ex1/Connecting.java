@@ -8,13 +8,14 @@ public class Connecting
 {
   public static void main(String a[])
   {
-    System.out.println("Trying to connect...");
     connectJdbc4Oracle();
     connectJdbc4MSSQL();
   }
 
   public static Connection connectJdbc4Oracle()
   {
+    System.out.println("Trying to connect to Oracle...");
+
     try
     {
       //Class.forName("oracle.jdbc.driver.OracleDriver"); not required since JDBC 4.0
@@ -31,6 +32,8 @@ public class Connecting
 
   public static Connection connectJdbc4MSSQL()
   {
+    System.out.println("Trying to connect to MSSQL...");
+
     try
     {
       SQLServerConnection conn = (SQLServerConnection) DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=javadb", "javadbuser", "javadbpass");
