@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context path="/JavaDBWeb" reloadable="true">
-  
   <!--            timeBetweenEvictionRunsMillis="10000" minEvictableIdleTimeMillis="15000"
   maxActive="20" maxIdle="5" minIdle="2" maxWait="3000" -->
-
-  <Resource name="jdbc/OracleBase" auth="Container"
-            driverClassName="oracle.jdbc.driver.OracleDriver" 
-            type="javax.sql.DataSource"
-
-            url="jdbc:oracle:thin:@127.0.0.1:1521/orcl"
-            username="user1" password="pass1" 
-  />
-  
-  <Resource name="jdbc/OraclePool" auth="Container" 
-            connectionPoolName="connPoolOracle" 
-            connectionFactoryClassName="oracle.jdbc.pool.OracleDataSource" 
-            factory="oracle.ucp.jdbc.PoolDataSourceImpl" 
-            type="oracle.ucp.jdbc.PoolDataSource"
-
-            url="jdbc:oracle:thin:@127.0.0.1:1521/orcl"
-            user="user1" password="pass1" 
-            
-            connectionWaitTimeout="3" inactiveConnectionTimeout="30" initialPoolSize="2" 
-            maxConnectionReuseCount="5" maxConnectionReuseTime="20" maxPoolSize="10" minPoolSize="4" 
-            timeoutCheckInterval="15" 
-            timeToLiveConnectionTimeout="25"
-            
-  />
-
+  <Resource auth="Container" driverClassName="oracle.jdbc.driver.OracleDriver" name="jdbc/OracleBase" password="pass1" type="javax.sql.DataSource" url="jdbc:oracle:thin:@127.0.0.1:1521/orcl" username="user1"/>
+  <Resource auth="Container" connectionFactoryClassName="oracle.jdbc.pool.OracleDataSource" connectionPoolName="connPoolOracle" connectionWaitTimeout="50" factory="oracle.ucp.jdbc.PoolDataSourceImpl" inactiveConnectionTimeout="30" initialPoolSize="2" maxConnectionReuseCount="5" maxConnectionReuseTime="20" maxPoolSize="10" minPoolSize="4" name="jdbc/OraclePool" password="pass1" timeToLiveConnectionTimeout="25" timeoutCheckInterval="15" type="oracle.ucp.jdbc.PoolDataSource" url="jdbc:oracle:thin:@127.0.0.1:1521/orcl" user="user1"/>
 </Context>

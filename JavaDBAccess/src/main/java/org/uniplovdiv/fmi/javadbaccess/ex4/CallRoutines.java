@@ -8,9 +8,9 @@ public class CallRoutines
 {
   public static void main(String[] args)
   {
-    callFunction();
+    //callFunction();
     //callProcedure();
-    //callFunctionCursor();
+    callFunctionCursor();
   }
 
    public static void callFunction()
@@ -19,7 +19,7 @@ public class CallRoutines
             CallableStatement cstmt = conn.prepareCall("{? = call get_employee(?)}"))
     {
       cstmt.registerOutParameter(1, Types.VARCHAR);
-      cstmt.setInt(2, 200);
+      cstmt.setInt(2, 189);
       cstmt.execute();
 
       String employeeName = cstmt.getString(1);
@@ -51,7 +51,7 @@ public class CallRoutines
     }
   }
 
-   public static void callFunctionCursor()
+  public static void callFunctionCursor()
   {
     try (Connection conn = Connecting.connectJdbc4Oracle();
             CallableStatement cstmt = conn.prepareCall("{? = call get_departments()}"))
