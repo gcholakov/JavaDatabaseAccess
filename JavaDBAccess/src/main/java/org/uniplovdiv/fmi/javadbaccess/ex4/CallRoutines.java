@@ -1,74 +1,69 @@
 package org.uniplovdiv.fmi.javadbaccess.ex4;
 
-import java.sql.*;
-import oracle.jdbc.*;
-import org.uniplovdiv.fmi.javadbaccess.ex1.*;
+import oracle.jdbc.OracleCallableStatement;
+import oracle.jdbc.OracleTypes;
+import org.uniplovdiv.fmi.javadbaccess.ex1.Connecting;
 
-public class CallRoutines
-{
-  public static void main(String[] args)
-  {
-    //callFunction();
-    //callProcedure();
-    callFunctionCursor();
-  }
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
-   public static void callFunction()
-  {
-    try (Connection conn = Connecting.connectJdbc4Oracle();
-            CallableStatement cstmt = conn.prepareCall("{? = call get_employee(?)}"))
-    {
-      cstmt.registerOutParameter(1, Types.VARCHAR);
-      cstmt.setInt(2, 189);
-      cstmt.execute();
+public class CallRoutines {
+    public static void main(String[] args) {
 
-      String employeeName = cstmt.getString(1);
-
-      System.out.println("Employee: " + employeeName);
+        callFunction();
+        //callProcedure();
+        //callFunctionCursor();
     }
-    catch (SQLException e)
-    {
-      e.printStackTrace();
-    }
-  }
 
-  public static void callProcedure()
-  {
-    try (Connection conn = Connecting.connectJdbc4Oracle();
-            CallableStatement cstmt = conn.prepareCall("{call find_country(?,?)}"))
-    {
-      cstmt.setString("ip_id", "RO");
-      cstmt.registerOutParameter("op_name", Types.VARCHAR);
-      cstmt.execute();
+    public static void callFunction() {
 
-      String country = cstmt.getString("op_name");
+        try (Connection conn = Connecting.connectJdbc4Oracle();
+             CallableStatement cstmt = conn.prepareCall("{? = call get_employee(?)}")) {
+            cstmt.registerOutParameter(1, Types.VARCHAR);
+            cstmt.setInt(2, 101);
+            cstmt.execute();
 
-      System.out.println("Country: " + country);
-    }
-    catch (SQLException e)
-    {
-      e.printStackTrace();
-    }
-  }
+            String employeeName = cstmt.getString(1);
 
-  public static void callFunctionCursor()
-  {
-    try (Connection conn = Connecting.connectJdbc4Oracle();
-            CallableStatement cstmt = conn.prepareCall("{? = call get_departments()}"))
-    {
-      cstmt.registerOutParameter(1, OracleTypes.CURSOR);
-      cstmt.execute();
+            System.out.println("Employee: " + employeeName);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-      ResultSet rset = ((OracleCallableStatement) cstmt).getCursor(1);
-      while (rset.next())
-      {
-        System.out.println(rset.getString("department_name") + " - " + rset.getString("location_id"));
-      }
-      rset.close();
+    public static void callProcedure() {
+
+        try (Connection conn = Connecting.connectJdbc4Oracle();
+             CallableStatement cstmt = conn.prepareCall("{call find_country(?,?)}")) {
+            cstmt.setString("ip_country_id", "BG");
+            cstmt.registerOutParameter("op_country_name", Types.VARCHAR);
+            cstmt.execute();
+
+            String country = cstmt.getString("op_country_name");
+
+            System.out.println("Country: " + country);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-    catch (SQLException e)
-    {
-      e.printStackTrace();
+
+    public static void callFunctionCursor() {
+
+        try (Connection conn = Connecting.connectJdbc4Oracle();
+             CallableStatement cstmt = conn.prepareCall("{? = call get_depts()}")) {
+            cstmt.registerOutParameter(1, OracleTypes.CURSOR);
+            cstmt.execute();
+
+            ResultSet rset = ((OracleCallableStatement) cstmt).getCursor(1);
+            while (rset.next()) {
+                System.out.println(rset.getString("name") + " - " + rset.getString("city"));
+            }
+            rset.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-  }
 }

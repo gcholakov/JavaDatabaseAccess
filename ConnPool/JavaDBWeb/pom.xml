@@ -27,12 +27,14 @@
       <version>1.2.3</version>
     </dependency>
 
+<!--
     <dependency>
       <groupId>oracle.ucp</groupId>
       <artifactId>UCP</artifactId>
       <version>11.2.0.3.0</version>
       <type>jar</type>
     </dependency>
+-->
 
   </dependencies>
 
