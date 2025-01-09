@@ -13,9 +13,9 @@ import java.sql.Types;
 public class CallRoutines {
     public static void main(String[] args) {
 
-        callFunction();
+        //callFunction();
         //callProcedure();
-        //callFunctionCursor();
+        callFunctionCursor();
     }
 
     public static void callFunction() {
