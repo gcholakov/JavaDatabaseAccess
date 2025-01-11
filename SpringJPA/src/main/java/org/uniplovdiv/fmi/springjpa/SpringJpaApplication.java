@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.uniplovdiv.fmi.springjpa.data.Country;
 import org.uniplovdiv.fmi.springjpa.data.Region;
 import org.uniplovdiv.fmi.springjpa.repo.CountriesRepository;
@@ -45,7 +44,8 @@ public class SpringJpaApplication implements CommandLineRunner {
         region.getCountries().add(new Country("MK", "Северна Македония", region));
         region.getCountries().add(new Country("AL", "Албания", region));
         Region savedRegion = regionsRepository.save(region);
-        log.info("Saved region with id: {}, name: {}, countries: {}", savedRegion.getId(), savedRegion.getName(), savedRegion.getCountries());
+        log.info("Saved region with id: {}, name: {}, countries: {}", savedRegion.getId(), savedRegion.getName(),
+        savedRegion.getCountries());
 */
 
         regionsRepository.findByName("Балканите").ifPresent(regionsRepository::delete);
