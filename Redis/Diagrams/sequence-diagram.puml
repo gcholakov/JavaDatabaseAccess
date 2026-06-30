@@ -1,0 +1,37 @@
+@startuml
+skinparam backgroundColor #f5f5f5
+skinparam sequence {
+    ArrowColor #333
+    ParticipantBorderColor #444
+    ParticipantBackgroundColor #fafafa
+}
+
+actor Client
+
+participant Controller
+participant Service
+participant "Redis Cache\n<img:redis.png{scale=0.5}>" as Redis
+participant Repository
+participant "MSSQL Database\n<img:mssql.png{scale=0.5}>" as MSSQL
+
+Client -> Controller : GET /product/{id}
+Controller -> Service : getProduct(id)
+
+alt Cache Hit
+    Service -> Redis : GET products::id
+    Redis --> Service : Cached Product
+    Service --> Controller : Product
+    Controller --> Client : JSON Response
+else Cache Miss
+    Service -> Redis : GET products::id
+    Redis --> Service : null
+    Service -> Repository : findById(id)
+    Repository -> MSSQL : SELECT * FROM products WHERE id = ?
+    MSSQL --> Repository : Product row
+    Repository --> Service : Product
+    Service -> Redis : SET products::id (TTL)
+    Service --> Controller : Product
+    Controller --> Client : JSON Response
+end
+
+@enduml

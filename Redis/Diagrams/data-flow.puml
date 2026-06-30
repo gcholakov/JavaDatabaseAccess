@@ -1,0 +1,44 @@
+@startuml
+skinparam backgroundColor #ffffff
+skinparam rectangle {
+  BackgroundColor #ffffff
+  BorderColor #333333
+  FontColor #212121
+}
+skinparam arrow {
+  Color #424242
+}
+
+' Лейаут: два реда – горе: Client, Controller, Service; долу: Redis, Repo, DB
+rectangle "Client\n(Browser/Postman)" as Client
+rectangle "Controller\n(Spring MVC)" as Controller
+rectangle "Service Layer\n(@Cacheable)" as Service
+
+rectangle "Redis Cache\n<img:redis.png{width=60}>" as Redis
+rectangle "Repository\n(JPA / JDBC)" as Repo
+database "MSSQL Database\n<img:mssql.png{width=70}>" as DB
+
+' Ръчно подреждане за по-къса диаграма
+Client -[hidden]-> Controller
+Controller -[hidden]-> Service
+Redis -[hidden]-> Repo
+Repo -[hidden]-> DB
+
+' Горен ред – основен поток
+Client --> Controller : HTTP Request
+Controller --> Service : call getProduct(id)
+
+' Кеш поток (долен ред)
+Service --> Redis : Check cache
+Redis --> Service : Cached data (hit)
+
+' DB поток (долен ред)
+Service --> Repo : Query DB (miss)
+Repo --> DB : SQL query
+DB --> Repo : Result set
+Repo --> Service : Product
+
+' Връщане нагоре
+Service --> Controller : JSON DTO
+Controller --> Client : HTTP Response
+@enduml
